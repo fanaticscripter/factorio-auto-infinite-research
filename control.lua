@@ -1,5 +1,5 @@
 function warn(message, force)
-  message = '[AIR] ' .. message
+  message = "[AIR] " .. message
   if force then
     force.print(message, {r = 1, g = 0.6})
   else
