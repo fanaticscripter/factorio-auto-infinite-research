@@ -65,6 +65,14 @@ function toggle_on_off(force, on)
   end
 end
 
+script.on_init(
+  function()
+    -- Enable AIR for all forces when AIR is added to a game for the first time.
+    for _, force in pairs(game.forces) do
+      toggle_on_off(force, true)
+    end
+  end
+)
 script.on_event(
   defines.events.on_player_created,
   function(event)
