@@ -1,5 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.1
+Date: 2020-08-30
+  Changes:
+    - Added ability to toggle the mod on or off, either through "Toggle Auto Infinite Research" in the shortcut bar, or through console commands /air and /air.off.
+---------------------------------------------------------------------------------------------------
 Version: 0.1.0
-Date: Aug 28, 2020
+Date: 2020-08-28
   Changes:
     - Initial release.
