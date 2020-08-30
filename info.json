@@ -4,6 +4,13 @@
     "title": "Auto Infinite Research",
     "author": "fanaticscripter",
     "factorio_version": "1.0",
-    "dependencies": ["base >= 1.0"],
-    "description": "Automatically queue up next levels of infinite mining productivity research so that your megabase can be fully automated."
+    "dependencies": [
+        "base >= 1.0"
+    ],
+    "description": "Automatically queue up next levels of infinite mining productivity research so that your megabase can be fully automated.",
+    "package": {
+        "ignore": [
+            "data/shortcut_icon.svg"
+        ]
+    }
 }

@@ -1,3 +1,5 @@
+local TOGGLE_NAME = "auto-infinite-research-toggle"
+
 function warn(message, force)
   message = "[AIR] " .. message
   if force then
@@ -20,6 +22,13 @@ function get_infinite_mining_productivity_tech(force)
 end
 
 function try_to_queue_up_infinite_tech(force)
+  -- Do nothing if AIR has been toggled off.
+  for _, player in ipairs(force.players) do
+    if not player.is_shortcut_toggled(TOGGLE_NAME) then
+      return
+    end
+    break
+  end
   -- Do nothing if player hasn't launched any rockets yet.
   if force.rockets_launched == 0 then
     return
@@ -41,10 +50,37 @@ function try_to_queue_up_infinite_tech(force)
     techs_queued = techs_queued + 1
   end
   if techs_queued > 0 then
-    warn("queued up next level(s) of mining productivity research", force)
+    warn(
+      "queued up next level(s) of mining productivity research " ..
+        "(you can turn off AIR from the shortcut bar, or with console command /air.off)",
+      force
+    )
   end
 end
 
+function toggle_on_off(force, on)
+  -- State has to be toggled for all players in the force.
+  for _, player in ipairs(force.players) do
+    player.set_shortcut_toggled(TOGGLE_NAME, on)
+  end
+end
+
+script.on_event(
+  defines.events.on_player_created,
+  function(event)
+    -- Turn on AIR if player is first in their force, otherwise set AIR state
+    -- to that of existing players in the force.
+    local player = game.get_player(event.player_index)
+    local on = true
+    for _, force_player in ipairs(player.force.players) do
+      if force_player.index ~= player.index then
+        on = force_player.is_shortcut_toggled(TOGGLE_NAME)
+        break
+      end
+    end
+    player.set_shortcut_toggled(TOGGLE_NAME, on)
+  end
+)
 script.on_event(
   defines.events.on_research_started,
   function(event)
@@ -57,12 +93,35 @@ script.on_event(
     try_to_queue_up_infinite_tech(event.research.force)
   end
 )
+script.on_event(
+  defines.events.on_lua_shortcut,
+  function(event)
+    if event.prototype_name ~= TOGGLE_NAME then
+      return
+    end
+    local player = game.get_player(event.player_index)
+    local on = player.is_shortcut_toggled(TOGGLE_NAME)
+    toggle_on_off(player.force, not on)
+    if not on then
+      -- Just toggled on.
+      try_to_queue_up_infinite_tech(player.force)
+    end
+  end
+)
 
 commands.add_command(
   "air",
-  "Try to queue up next level(s) of infinite mining productivity research.",
+  "Turn on AIR and try to queue up next level(s) of infinite mining productivity research.",
   function(event)
+    toggle_on_off(game.player.force, true)
     try_to_queue_up_infinite_tech(game.player.force)
+  end
+)
+commands.add_command(
+  "air.off",
+  "Turn off AIR.",
+  function(event)
+    toggle_on_off(game.player.force, false)
   end
 )
 
