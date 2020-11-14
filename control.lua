@@ -2,10 +2,11 @@ local TOGGLE_NAME = "auto-infinite-research-toggle"
 
 function warn(message, force)
   message = "[AIR] " .. message
-  if force then
-    force.print(message, {r = 1, g = 0.6})
-  else
-    game.print(message, {r = 1, g = 0.6})
+  players = force and force.players or game.players
+  for _, player in ipairs(players) do
+    if not settings.get_player_settings(player)["air-turn-off-messages"].value then
+      force.print(message, {r = 1, g = 0.6})
+    end
   end
 end
 
